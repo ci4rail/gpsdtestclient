@@ -27,10 +27,19 @@ func main() {
 		sky := r.(*gpsd.SKYReport)
 
 		fmt.Println("SKY", len(sky.Satellites), "satellites")
+
+		for _, s := range sky.Satellites {
+			dumpSat(s)
+		}
+
 	}
 
 	gps.AddFilter("SKY", skyfilter)
 
 	done := gps.Watch()
 	<-done
+}
+
+func dumpSat(s gpsd.Satellite) {
+	fmt.Printf("  PRN=%v, ss=%.3f\n", s.PRN, s.Ss)
 }
