@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"time"
 
 	"github.com/stratoberry/go-gpsd"
 )
@@ -37,6 +39,19 @@ func main() {
 	gps.AddFilter("SKY", skyfilter)
 
 	done := gps.Watch()
+
+	if len(os.Args) > 1 {
+		timeout, err := time.ParseDuration(os.Args[1])
+		if err != nil {
+			panic(fmt.Sprintf("Cannot parse time duration %s", err))
+		}
+		fmt.Printf("Exit after %v seconds\n", timeout)
+
+		go func() {
+			time.Sleep(timeout)
+			done <- true
+		}()
+	}
 	<-done
 }
 
