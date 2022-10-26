@@ -1,0 +1,26 @@
+on:
+  release:
+    types: [created]
+
+jobs:
+  releases-matrix:
+    name: Release Go Binary
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # build and publish in parallel
+        goos: [linux]
+        goarch: [amd64, arm, arm64]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Build Test
+        uses: wangyoucao577/go-release-action@v1.22
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          build_flags: -tags netgo,osusergo,static_build
+          goos: ${{ matrix.goos }}
+          goarch: ${{ matrix.goarch }}
+          goversion: "https://go.dev/dl/go1.18.1.linux-amd64.tar.gz"
+          project_path: "."
+          binary_name: gpsdclient
